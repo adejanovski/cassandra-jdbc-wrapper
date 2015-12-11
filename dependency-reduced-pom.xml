@@ -162,7 +162,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-SymbolicName>com.datastax.driver.jdbc</Bundle-SymbolicName>
+            <Bundle-SymbolicName>com.github.adejanovski.cassandra.jdbc</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <_include>-osgi.bnd</_include>
           </instructions>
@@ -223,8 +223,7 @@
             <version>2.17</version>
             <executions>
               <execution>
-                <id>citrus-integration-tests</id>
-                <phase>integration-test</phase>
+                <phase>test</phase>
                 <goals>
                   <goal>test</goal>
                 </goals>
@@ -234,7 +233,7 @@
                     <include>**/*UnitTest.class</include>
                   </includes>
                   <systemPropertyVariables>
-                    <cassandra.version>${cassandra.version}</cassandra.version>
+                    <cassandra.version>2.1.9</cassandra.version>
                     <ipprefix>${ipprefix}</ipprefix>
                     <com.datastax.driver.NEW_NODE_DELAY_SECONDS>60</com.datastax.driver.NEW_NODE_DELAY_SECONDS>
                   </systemPropertyVariables>
@@ -283,19 +282,21 @@
       </properties>
     </profile>
     <profile>
-      <id>short</id>
+      <id>test</id>
       <build>
         <plugins>
           <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>2.16</version>
+            <version>2.18.1</version>
             <configuration>
-              <groups>unit,short</groups>
-              <useFile>false</useFile>
               <systemPropertyVariables>
                 <cassandra.version>${cassandra.version}</cassandra.version>
                 <ipprefix>${ipprefix}</ipprefix>
+                <com.datastax.driver.NEW_NODE_DELAY_SECONDS>60</com.datastax.driver.NEW_NODE_DELAY_SECONDS>
               </systemPropertyVariables>
+              <suiteXmlFiles>
+                <suiteXmlFile>testng.xml</suiteXmlFile>
+              </suiteXmlFiles>
             </configuration>
           </plugin>
         </plugins>
@@ -348,6 +349,7 @@
     <cassandra.host>localhost</cassandra.host>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <gpg.useagent>true</gpg.useagent>
+    <cassandra.version>2.1.9</cassandra.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 </project>

@@ -1,14 +1,14 @@
-Driver JDBC
-===========
+Cassandra JDBC wrapper for the Datastax Java Driver
+===================================================
 
-This is the jdbc module of the DataStax Java Driver for Apache Cassandra (C*), 
+This is the jdbc wrapper of the DataStax Java Driver for Apache Cassandra (C*), 
 which offers a simple JDBC compliant API to work with CQL3. 
 
 
 Features
 --------
 
-The JDBC module offers access to most of the core module features:
+The JDBC wrapper offers access to most of the core module features:
   - Asynchronous: the driver uses the new CQL binary protocol asynchronous
     capabilities. Only a relatively low number of connections per nodes needs to
     be maintained open to achieve good performance.
@@ -48,16 +48,11 @@ Installing
 
 The last release of the driver is available on Maven Central. You can install
 it in your application using the following Maven dependency::
-
+    
     <dependency>
-      <groupId>com.datastax.cassandra</groupId>
-      <artifactId>cassandra-driver-core</artifactId>
-      <version>2.1.4</version>
-    </dependency>
-    <dependency>
-      <groupId>com.datastax.cassandra</groupId>
+      <groupId>com.github.adejanovski.cassandra</groupId>
       <artifactId>cassandra-driver-jdbc</artifactId>
-      <version>2.1.4</version>
+      <version>2.1.9</version>
     </dependency>
 
 
@@ -67,7 +62,7 @@ Getting Started
 
 Connect to a Cassandra cluster using the following arguments::
 
-    JDBC driver class : com.datastax.driver.jdbc.CassandraDriver
+    JDBC driver class : com.github.adejanovski.cassandra.jdbc.CassandraDriver
     JDBC URL : jdbc:cassandra://host1--host2--host3:9042/keyspace
 
 
@@ -80,7 +75,7 @@ Statements and prepared statements can be executed as with any JDBC driver, but 
 
 Java sample::
 
-    Class.forName("com.datastax.driver.jdbc.CassandraDriver");
+    Class.forName("com.github.adejanovski.cassandra.jdbc.CassandraDriver");
     String URL = "jdbc:cassandra://host1--host2--host3:9042/keyspace1";
     connection = DriverManager.getConnection(URL); 
 

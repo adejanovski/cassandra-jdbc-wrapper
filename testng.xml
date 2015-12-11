@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="JdbcTestSuite" parallel="false">
+  <test name="JdbcTest">  
+    <classes>    
+      <class name="com.github.adejanovski.cassandra.jdbc.BuildCluster"/>
+      <class name="com.github.adejanovski.cassandra.jdbc.DataSourceUnitTest"/>
+      <class name="com.github.adejanovski.cassandra.jdbc.UtilsUnitTest"/>
+      <class name="com.github.adejanovski.cassandra.jdbc.PooledUnitTest"/>
+      <class name="com.github.adejanovski.cassandra.jdbc.MetadataResultSetsUnitTest"/>
+      <class name="com.github.adejanovski.cassandra.jdbc.CollectionsUnitTest"/>
+      <class name="com.github.adejanovski.cassandra.jdbc.BatchStatementsUnitTest"/>
+      <class name="com.github.adejanovski.cassandra.jdbc.JdbcRegressionUnitTest"/>     
+      <class name="com.github.adejanovski.cassandra.jdbc.ConnectionUnitTest"/>    
+    </classes>
+  </test> 
+</suite> <!-- JdbcTestSuite -->

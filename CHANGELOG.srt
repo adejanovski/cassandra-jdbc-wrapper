@@ -1,7 +1,0 @@
-CHANGELOG
-=========
-
-2.1.4:
-------
-
-Redesign of the apache jdbc driver for Cassandra using the Datastax Java driver

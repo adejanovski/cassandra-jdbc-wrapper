@@ -132,45 +132,10 @@ public class Utils
 
     protected static final Logger logger = LoggerFactory.getLogger(Utils.class);
 
-    /**
-     * Use the Compression object method to deflate the query string
-     *
-     * @param queryStr An un-compressed CQL query string
-     * @param compression The compression object
-     * @return A compressed string
-    
-    
-    public static ByteBuffer compressQuery(String queryStr, Compression compression)
-    {
-        byte[] data = queryStr.getBytes(Charsets.UTF_8);
-        Deflater compressor = new Deflater();
-        compressor.setInput(data);
-        compressor.finish();
 
-        ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-
-        try
-        {
-            while (!compressor.finished())
-            {
-                int size = compressor.deflate(buffer);
-                byteArray.write(buffer, 0, size);
-            }
-        }
-        finally
-        {
-            compressor.end(); //clean up after the Deflater
-        }
-
-        logger.trace("Compressed query statement {} bytes in length to {} bytes", data.length, byteArray.size());
-
-        return ByteBuffer.wrap(byteArray.toByteArray());
-    }
- */
     /**
      * Parse a URL for the Cassandra JDBC Driver
-     * <p/>
+     * <p></p>
      * The URL must start with the Protocol: "jdbc:cassandra:"
      * The URI part(the "Subname") must contain a host and an optional port and optional keyspace name
      * ie. "//localhost:9160/Test1"

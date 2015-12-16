@@ -50,12 +50,12 @@ The last release of the driver is available on Maven Central. You can install
 it in your application using the following Maven dependency::
     
     <dependency>
-      <groupId>com.github.adejanovski.cassandra</groupId>
-      <artifactId>cassandra-driver-jdbc</artifactId>
-      <version>2.1.9</version>
-    </dependency>
+		<groupId>com.github.adejanovski</groupId>
+		<artifactId>cassandra-jdbc-wrapper</artifactId>
+		<version>2.1.9</version>
+	</dependency>
 
-
+Or get the `fat jar with all dependencies included <https://drive.google.com/folderview?id=0B7fwX0DqcWSTNzZianJrWDI2bHc&usp=sharing#list>`_.
 
 Getting Started
 ---------------

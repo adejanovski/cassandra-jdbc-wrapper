@@ -55,7 +55,7 @@ it in your application using the following Maven dependency::
 		<version>2.1.9</version>
 	</dependency>
 
-Or get the `fat jar with all dependencies included <https://drive.google.com/folderview?id=0B7fwX0DqcWSTNzZianJrWDI2bHc&usp=sharing#list>`
+Or get the `fat jar with all dependencies included <https://drive.google.com/folderview?id=0B7fwX0DqcWSTNzZianJrWDI2bHc&usp=sharing#list>`_.
 
 Getting Started
 ---------------

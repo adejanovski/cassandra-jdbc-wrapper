@@ -34,7 +34,7 @@ this version 2.0 of the driver require Cassandra 2.0 however and will throw
 'unsupported feature' exceptions if used against a Cassandra 1.2 cluster.
 
 If you are having issues connecting to the cluster (seeing ``NoHostAvailableConnection``
-exceptions) please check the [connection requirements](https://github.com/datastax/java-driver/wiki/Connection-requirements).
+exceptions) please check the `connection requirements <https://github.com/datastax/java-driver/wiki/Connection-requirements>`_.
 
 If you want to run the unit tests provided with this driver, you will also need
 to have ccm installed (http://github.com/pcmanus/ccm) as the tests use it. Also
@@ -55,7 +55,7 @@ it in your application using the following Maven dependency::
 		<version>2.1.9</version>
 	</dependency>
 
-Or get the [fat jar with all dependencies included here](https://drive.google.com/folderview?id=0B7fwX0DqcWSTNzZianJrWDI2bHc&usp=sharing#list).
+Or get the `fat jar with all dependencies included <https://drive.google.com/folderview?id=0B7fwX0DqcWSTNzZianJrWDI2bHc&usp=sharing#list>`
 
 Getting Started
 ---------------

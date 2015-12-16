@@ -108,6 +108,8 @@ public class CassandraConnection extends AbstractConnection implements Connectio
 
     /**
      * Instantiates a new CassandraConnection.
+     * @param sessionHolder
+     * @throws SQLException
      */
     public CassandraConnection(SessionHolder sessionHolder) throws SQLException
     {
@@ -419,6 +421,8 @@ public class CassandraConnection extends AbstractConnection implements Connectio
 
     /**
      * Remove a Statement from the Open Statements List
+     * @param statement
+     * @return
      */
     protected boolean removeStatement(Statement statement)
     {

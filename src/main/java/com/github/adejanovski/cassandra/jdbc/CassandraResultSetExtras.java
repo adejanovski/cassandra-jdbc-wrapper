@@ -25,13 +25,12 @@ import java.util.Set;
 public interface CassandraResultSetExtras extends ResultSet
 {
     /**
-     * @return the current row key
+     * @return the current row key    
+     * @throws SQLException
      */
     public byte[] getKey()throws SQLException;;
     
-    /** @return a BigInteger value for the given column offset*/
     public BigInteger getBigInteger(int i) throws SQLException;
-    /** @return a BigInteger value for the given column name */
     public BigInteger getBigInteger(String name) throws SQLException;
     
     public List<?> getList(int index) throws SQLException;

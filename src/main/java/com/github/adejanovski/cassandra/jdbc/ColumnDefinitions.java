@@ -20,8 +20,8 @@ import com.datastax.driver.core.DataType;
 import com.datastax.driver.core.exceptions.InvalidTypeException;
 
 /**
- * Metadata describing the columns returned in a {@link ResultSet} or a
- * {@link PreparedStatement}.
+ * Metadata describing the columns returned in a {@link CassandraResultSet} or a
+ * {@link CassandraPreparedStatement}.
  * <p>
  * A {@code columnDefinitions}} instance is mainly a list of
  * {@code ColumnsDefinitions.Definition}. The definitions or metadata for a column

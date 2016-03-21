@@ -514,7 +514,7 @@ class CassandraMetadataResultSet extends AbstractResultSet implements CassandraR
         checkIndex(index);
         if(currentRow.getColumnDefinitions().getType(index-1).isCollection()){
 			try {
-				return Lists.newArrayList(currentRow.getList(index - 1,Class.forName(currentRow.getColumnDefinitions().getType(index-1).getTypeArguments().get(0).asJavaClass().getCanonicalName())));
+				return Lists.newArrayList(currentRow.getList(index - 1,Class.forName(currentRow.getColumnDefinitions().getType(index-1).getTypeArguments().get(0).getClass().getCanonicalName())));
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -530,7 +530,7 @@ class CassandraMetadataResultSet extends AbstractResultSet implements CassandraR
         // return currentRow.getList(name,String.class); // TODO: a remplacer par une vraie verification des types de collections
         if(currentRow.getColumnDefinitions().getType(name).isCollection()){
 			try {
-				return Lists.newArrayList(currentRow.getList(name,Class.forName(currentRow.getColumnDefinitions().getType(name).getTypeArguments().get(0).asJavaClass().getCanonicalName())));
+				return Lists.newArrayList(currentRow.getList(name,Class.forName(currentRow.getColumnDefinitions().getType(name).getTypeArguments().get(0).getClass().getCanonicalName())));
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -716,24 +716,24 @@ class CassandraMetadataResultSet extends AbstractResultSet implements CassandraR
     {
         checkIndex(index);        
         try {
-			return currentRow.getSet(index-1,Class.forName(currentRow.getColumnDefinitions().getType(index-1).getTypeArguments().get(0).asJavaClass().getCanonicalName()));
+			return currentRow.getSet(index-1,Class.forName(currentRow.getColumnDefinitions().getType(index-1).getTypeArguments().get(0).getClass().getCanonicalName()));
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new SQLNonTransientException(e);
 		}
-        return null;
+     
     }
 
     public Set<?> getSet(String name) throws SQLException
     {
         checkName(name);
         try {
-			return currentRow.getSet(name,Class.forName(currentRow.getColumnDefinitions().getType(name).getTypeArguments().get(0).asJavaClass().getCanonicalName()));
+			return currentRow.getSet(name,Class.forName(currentRow.getColumnDefinitions().getType(name).getTypeArguments().get(0).getClass().getCanonicalName()));
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new SQLNonTransientException(e);
 		}
-        return null;
+        
     }
 
 
@@ -1005,9 +1005,9 @@ class CassandraMetadataResultSet extends AbstractResultSet implements CassandraR
             checkIndex(column);
             return values.get(column - 1).getValueType().getType().getName();*/
         	if(currentRow!=null){
-        		return currentRow.getColumnDefinitions().getType(column-1).asJavaClass().getCanonicalName();
+        		return currentRow.getColumnDefinitions().getType(column-1).getName().toString();
             }
-			return driverResultSet.getColumnDefinitions().asList().get(column-1).getType().asJavaClass().getCanonicalName();
+			return driverResultSet.getColumnDefinitions().asList().get(column-1).getType().getName().toString();
         	
         }
 

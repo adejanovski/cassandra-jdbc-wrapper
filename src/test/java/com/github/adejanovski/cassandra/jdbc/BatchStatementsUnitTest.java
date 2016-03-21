@@ -38,7 +38,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.datastax.driver.core.CCMBridge;
+//import com.datastax.driver.core.CCMBridge;
 import com.github.adejanovski.cassandra.jdbc.CassandraStatement;
 
 public class BatchStatementsUnitTest {

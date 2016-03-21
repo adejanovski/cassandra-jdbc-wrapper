@@ -89,8 +89,8 @@ public class CassandraConnection extends AbstractConnection implements Connectio
     protected int numFailures = 0;
     protected String username = null;
     protected String url = null;
-    protected String cluster;//current catalog
-    protected String currentKeyspace;//current schema
+    public String cluster;
+    protected String currentKeyspace;
     protected TreeSet<String> hostListPrimary;
     protected TreeSet<String> hostListBackup;
     int majorCqlVersion;

@@ -31,7 +31,7 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
-import com.datastax.driver.core.CCMBridge;
+//import com.datastax.driver.core.CCMBridge;
 import com.github.adejanovski.cassandra.jdbc.CassandraConnection;
 import com.github.adejanovski.cassandra.jdbc.CassandraDataSource;
 import com.github.adejanovski.cassandra.jdbc.Utils;

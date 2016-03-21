@@ -28,7 +28,7 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
-import com.datastax.driver.core.CCMBridge;
+//import com.datastax.driver.core.CCMBridge;
 import com.github.adejanovski.cassandra.jdbc.CassandraDataSource;
 import com.github.adejanovski.cassandra.jdbc.PooledCassandraDataSource;
 
@@ -98,7 +98,7 @@ public class PooledUnitTest
    @AfterClass
     public static void tearDownAfterClass() throws Exception
     {
-    	if (con != null) con.close();
+    	
     	if(!suiteLaunch){
         	BuildCluster.tearDownAfterSuite();
         }

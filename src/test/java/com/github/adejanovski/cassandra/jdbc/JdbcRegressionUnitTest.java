@@ -57,12 +57,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import com.datastax.driver.core.CCMBridge;
-import com.datastax.driver.core.CCMBridge.CCMCluster;
+
+//import com.datastax.driver.core.CCMBridge;
+//import com.datastax.driver.core.CCMBridge.CCMCluster;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.DataType;
 import com.datastax.driver.core.Host;
+import com.datastax.driver.core.ProtocolVersion;
 import com.datastax.driver.core.TupleType;
 import com.datastax.driver.core.TupleValue;
 import com.datastax.driver.core.UDTValue;
@@ -810,7 +812,7 @@ public class JdbcRegressionUnitTest
        
     }
 
-    @Test
+    /*@Test
     public void testUDTandTuple() throws Exception
     {
     	// Work with UDT - only in Cassandra 2.1+
@@ -841,7 +843,7 @@ public class JdbcRegressionUnitTest
 	        String insert = "INSERT INTO t_udt(id, field_values, the_tuple, the_other_tuple) values(?,{key : ?, value : ?}, (?,?,?),?);";
 	        
 	        
-	        TupleValue t = TupleType.of(DataType.cint(), DataType.text(), DataType.cfloat()).newValue();
+	        TupleValue t = TupleType.of(ProtocolVersion.V4, con.cluster.getConfiguration().getCodecRegistry(), DataType.cint(), DataType.text(), DataType.cfloat()).newValue();
 	        t.setInt(0, 1).setString(1, "midVal").setFloat(2, (float)2.0);	        
 			
 	        PreparedStatement pstatement = con.prepareStatement(insert);
@@ -877,7 +879,7 @@ public class JdbcRegressionUnitTest
 	        pstatement.close();
     	}
        
-    }
+    }*/
     
     
     @Test

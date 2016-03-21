@@ -43,7 +43,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import com.datastax.driver.core.CCMBridge;
+//import com.datastax.driver.core.CCMBridge;
 import com.github.adejanovski.cassandra.jdbc.CassandraStatement;
 import com.github.adejanovski.cassandra.jdbc.MetadataResultSets;
 

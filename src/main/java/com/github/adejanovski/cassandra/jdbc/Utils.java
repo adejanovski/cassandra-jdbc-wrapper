@@ -624,7 +624,12 @@ public class Utils
     	LoadBalancingPolicy policy = null;
     	//LoadBalancingPolicy childPolicy = null;
     	if(!lbString.contains(".")){
-			lbString="com.datastax.driver.core.policies."+ lbString;
+    		if(lbString.toLowerCase().contains("dcawareroundrobinpolicy")){
+    			lbString="com.github.adejanovski.cassandra.jdbc.policies."+ lbString; 
+    		}
+    		else{
+    			lbString="com.datastax.driver.core.policies."+ lbString;
+    		}
 		}
     	
     	if(parameters.length()>0){
@@ -697,8 +702,14 @@ public class Utils
         		}else{
 	        		Class<?> clazz = Class.forName(lbString);
 	        		Constructor<?> constructor = clazz.getConstructor(primaryParametersClasses.toArray(new Class[primaryParametersClasses.size()]));
-	        		
-	        		return (LoadBalancingPolicy) constructor.newInstance(paramList.toArray(new Object[paramList.size()]));
+	        		if(lbString.toLowerCase().contains("dcawareroundrobinpolicy")){
+	        			// special sauce for the DCAwareRRPolicy that has no more public constructor in 3.0 and now uses the builder pattern
+	        			com.github.adejanovski.cassandra.jdbc.policies.DCAwareRoundRobinPolicy wrappedPolicy = (com.github.adejanovski.cassandra.jdbc.policies.DCAwareRoundRobinPolicy) constructor.newInstance(paramList.toArray(new Object[paramList.size()]));
+	        			return (LoadBalancingPolicy) wrappedPolicy.build();
+	        		}
+	        		else{
+	        			return (LoadBalancingPolicy) constructor.newInstance(paramList.toArray(new Object[paramList.size()]));
+	        		}
         		}
         	}else{
         		// Only one policy has been specified, with no parameter or child policy         		

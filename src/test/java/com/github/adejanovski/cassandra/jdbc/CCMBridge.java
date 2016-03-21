@@ -16,7 +16,7 @@
 package com.github.adejanovski.cassandra.jdbc;
 
 import static com.datastax.driver.core.TestUtils.CREATE_KEYSPACE_SIMPLE_FORMAT;
-import static com.datastax.driver.core.TestUtils.SIMPLE_KEYSPACE;
+//import static com.datastax.driver.core.TestUtils.SIMPLE_KEYSPACE;
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.testng.Assert.fail;
 
@@ -53,6 +53,8 @@ public class CCMBridge {
     public static final String IP_PREFIX;
 
     private static final String CASSANDRA_VERSION_REGEXP = "\\d\\.\\d\\.\\d+(-\\w+)?";
+
+	public static final Object SIMPLE_KEYSPACE = "simple_ks";
 
     static File CASSANDRA_DIR;
     static String CASSANDRA_VERSION;

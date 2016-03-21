@@ -52,7 +52,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.datastax.driver.core.BoundStatement;
+import com.datastax.driver.core.LocalDate;
 import com.datastax.driver.core.ResultSetFuture;
+import com.datastax.driver.core.exceptions.CodecNotFoundException;
 import com.datastax.driver.core.exceptions.InvalidTypeException;
 import com.google.common.collect.Lists;
 
@@ -302,7 +304,7 @@ class CassandraPreparedStatement extends CassandraStatement implements PreparedS
         checkIndex(parameterIndex);
         // date type data is handled as an 8 byte Long value of milliseconds since the epoch (handled in decompose() )
         //bindValues.put(parameterIndex, value == null ? null : JdbcDate.instance.decompose(value));
-        this.statement.setDate(parameterIndex-1, value);
+        this.statement.setTimestamp(parameterIndex-1, value);
     }
 
 
@@ -339,8 +341,8 @@ class CassandraPreparedStatement extends CassandraStatement implements PreparedS
         //bindValues.put(parameterIndex, JdbcInt32.instance.decompose(integer));
         try{
         	this.statement.setInt(parameterIndex-1, integer);
-        }catch(InvalidTypeException e){
-    		if(e.getMessage().contains("is of type varint")){
+        }catch(CodecNotFoundException e){        	        
+    		if(e.getMessage().contains("Codec not found for requested operation: [varint <-> java.lang.Integer]")){
     			this.statement.setVarint(parameterIndex-1, BigInteger.valueOf((long)integer));
     		}
     	}
@@ -453,7 +455,7 @@ class CassandraPreparedStatement extends CassandraStatement implements PreparedS
         	this.statement.setString(parameterIndex-1, object.toString());
         	break;          
         case Types.TIMESTAMP:
-        	this.statement.setDate(parameterIndex-1, (Timestamp)object);
+        	this.statement.setTimestamp(parameterIndex-1, (Timestamp)object);
         	break;
         case Types.DECIMAL:
         	this.statement.setDecimal(parameterIndex-1, (BigDecimal)object);
@@ -467,14 +469,14 @@ class CassandraPreparedStatement extends CassandraStatement implements PreparedS
         case Types.INTEGER:
         	try{
         		this.statement.setInt(parameterIndex-1, (Integer)object);
-        	}catch(InvalidTypeException e){
-        		if(e.getMessage().contains("is of type varint")){
+        	}catch(CodecNotFoundException e){
+        		if(e.getMessage().contains("varint")){ // sucks but works
         			this.statement.setVarint(parameterIndex-1, BigInteger.valueOf(Long.parseLong(object.toString())));
         		}
         	}
         	break;
         case Types.DATE:
-        	this.statement.setDate(parameterIndex-1, (Date)object);
+        	this.statement.setTimestamp(parameterIndex-1, (Date)object);
         	break;
         case Types.ROWID:
         	this.statement.setUUID(parameterIndex-1, (java.util.UUID)object);
@@ -532,16 +534,16 @@ class CassandraPreparedStatement extends CassandraStatement implements PreparedS
         checkIndex(parameterIndex);
         try{        	
         	this.statement.setString(parameterIndex-1, value);
-        }catch(InvalidTypeException e){        	       
+        }catch(CodecNotFoundException e){        	       
         	// Big ugly hack in order to parse string representations of collections
         	// Yes, I'm ashamed...
-           	if(e.getMessage().contains("is of type set<")){
+           	if(e.getMessage().contains("set<")){
         		String itemType = e.getMessage().substring(e.getMessage().indexOf("<")+1, e.getMessage().indexOf(">"));
         		this.statement.setSet(parameterIndex-1, Utils.parseSet(itemType, value));        		        		        		
-    		}else if(e.getMessage().contains("is of type list<")){
+    		}else if(e.getMessage().contains("list<")){
         		String itemType = e.getMessage().substring(e.getMessage().indexOf("<")+1, e.getMessage().indexOf(">"));
         		this.statement.setList(parameterIndex-1, Utils.parseList(itemType, value));        	    		
-    		}else if(e.getMessage().contains("is of type map<")){
+    		}else if(e.getMessage().contains("map<")){
         		String[] kvTypes = e.getMessage().substring(e.getMessage().indexOf("<")+1, e.getMessage().indexOf(">")).replace(" ", "").split(",");
         		this.statement.setMap(parameterIndex-1, Utils.parseMap(kvTypes[0],kvTypes[1], value));
     		}
@@ -573,7 +575,7 @@ class CassandraPreparedStatement extends CassandraStatement implements PreparedS
         checkNotClosed();
         checkIndex(parameterIndex);
         // timestamp type data is handled as an 8 byte Long value of milliseconds since the epoch. Nanos are not supported and are ignored
-        this.statement.setDate(parameterIndex-1, new Date(value.getTime()));
+        this.statement.setTimestamp(parameterIndex-1, new Date(value.getTime()));
     }
 
 

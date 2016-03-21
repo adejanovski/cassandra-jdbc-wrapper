@@ -27,7 +27,7 @@ import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.AfterClass;
 
-import com.datastax.driver.core.CCMBridge;
+//import com.datastax.driver.core.CCMBridge;
 
 public class ConnectionUnitTest {
 	private static String HOST = System.getProperty("host", ConnectionDetails.getHost());

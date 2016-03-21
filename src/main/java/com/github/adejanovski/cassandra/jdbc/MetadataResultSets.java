@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 
+
 import com.datastax.driver.core.ColumnMetadata;
+import com.datastax.driver.core.IndexMetadata;
 import com.datastax.driver.core.KeyspaceMetadata;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.TableMetadata;
@@ -290,18 +292,16 @@ public  class MetadataResultSets
 	    		
 	    		for(TableMetadata table:tables){
 	    			if(tableName.equals(table.getName())){
-	    				
-	    				for(ColumnMetadata col:table.getColumns()){
-	    					if(col.getIndex()!=null){
+	    				for(IndexMetadata index:table.getIndexes()){	    					
 	    						MetadataRow row = new MetadataRow().addEntry("TABLE_CAT", statement.connection.getCatalog())    					
 			    					.addEntry("TABLE_SCHEM", keyspace.getName())
 			    					.addEntry("TABLE_NAME", table.getName())
 			    					.addEntry("NON_UNIQUE", true+"")
 			    					.addEntry("INDEX_QUALIFIER",  statement.connection.getCatalog())
-			    					.addEntry("INDEX_NAME", col.getIndex().getName())
+			    					.addEntry("INDEX_NAME", index.getName())
 			    					.addEntry("TYPE", DatabaseMetaData.tableIndexHashed+"")
 	    							.addEntry("ORDINAL_POSITION", 1+"")
-	    							.addEntry("COLUMN_NAME", col.getName())
+	    							.addEntry("COLUMN_NAME", index.getTarget())
 	    							.addEntry("ASC_OR_DESC", null)
 	    							.addEntry("CARDINALITY", -1+"")
 	    							.addEntry("PAGES", -1+"")
@@ -311,7 +311,7 @@ public  class MetadataResultSets
 	    				}
 	    			}
 
-    		}
+    		
     	
     	}
     	}

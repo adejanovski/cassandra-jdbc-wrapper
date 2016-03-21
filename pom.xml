@@ -5,7 +5,7 @@
 
 	<groupId>com.github.adejanovski</groupId>
 	<artifactId>cassandra-jdbc-wrapper</artifactId>
-	<version>2.1.9</version>
+	<version>3.0.0</version>
 
 	<packaging>jar</packaging>
 	<name>Cassandra JDBC Wrapper</name>

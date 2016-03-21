@@ -1,65 +1,81 @@
-/*
- *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- */
 package com.github.adejanovski.cassandra.jdbc;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.sql.DriverManager;
-import java.sql.Statement;
+import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterSuite;
-import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.BeforeTest;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Cluster.Builder;
+import com.datastax.driver.core.ConsistencyLevel;
+import com.datastax.driver.core.QueryOptions;
+import com.datastax.driver.core.Session;
 
 public class BuildCluster {
-	
-	
+
+	private final static Logger logger = LoggerFactory.getLogger(BuildCluster.class);
+
 	public static String HOST = System.getProperty("host", ConnectionDetails.getHost());
 	public static CCMBridge ccmBridge = null;
-	
-	@BeforeSuite
-    public static void setUpBeforeSuite() throws Exception
-    {   
-		if(System.getProperty("cassandra.version")==null){
-			CCMBridge.setCassandraVersion("2.1.9");
+	public static Cluster cluster = null;
+	public static Session session = null;
+	public static Cluster cluster2 = null;
+	public static Session session2 = null;
+	public static Session sessionFluks = null;
+	public static boolean clusterHasBuilt = false;
+	public static boolean dynamicCluster = false;
+
+	@BeforeSuite(groups={"init"})
+	public static void setUpBeforeSuite() throws Exception {		
+		System.setProperty("cassandra.version", "3.0.4");
+		System.setProperty("ipprefix","127.0.0.");
+		if(!isClusterActive()){
+			ccmBridge = CCMBridge.create("jdbc_cluster" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()), 1, 1);
+			ccmBridge.waitForUp(1);
+			//ccmBridge.waitForUp(2);
+			HOST = CCMBridge.ipOfNode(1);
+			dynamicCluster = true;
 		}
-		ccmBridge = CCMBridge.create("jdbc_cluster"+ new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()), 1, 1);
-    	ccmBridge.waitForUp(1);
-    	ccmBridge.waitForUp(2);    	
-    	HOST = CCMBridge.ipOfNode(1);        
-   
-	    }
-
-	    
-	@AfterSuite
-	public static void tearDownAfterSuite() throws Exception
-	{	    	
-        System.out.println("Stopping nodes");
-        ccmBridge.forceStop();        
-        ccmBridge.waitForDown(1);
-        System.out.println("Discarding cluster");
-        ccmBridge.remove();
+		else{
+			HOST = "127.0.0.1";
+		}
+		
+		clusterHasBuilt = true;		
 	}
-	    
-
+	
+		
+	@AfterSuite(groups={"init"})
+	public static void tearDownAfterSuite() throws Exception {		
+		System.out.println("CLOSING CASSANDRA CONNECTION");		
+		if(dynamicCluster){
+			System.out.println("Stopping nodes");
+			clusterHasBuilt = false;
+			try{
+				ccmBridge.forceStop();			
+				System.out.println("Discarding cluster");
+				ccmBridge.remove();
+				HOST = System.getProperty("host", ConnectionDetails.getHost());
+			}catch(Exception e){
+				System.out.println("Silent error discarding cluster");
+			}
+		}
+	}
+	
+	
+	public static boolean isClusterActive(){
+		try{
+			Builder builder = Cluster.builder().withQueryOptions(new QueryOptions().setConsistencyLevel(ConsistencyLevel.QUORUM).setSerialConsistencyLevel(ConsistencyLevel.LOCAL_SERIAL));
+			cluster = builder.addContactPoint("127.0.0.1").build();
+			session = cluster.connect();
+			return true;
+		} catch(Exception e){
+			return false;			
+		}
+		
+	}
 
 }

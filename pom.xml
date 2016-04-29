@@ -5,7 +5,7 @@
 
 	<groupId>com.github.adejanovski</groupId>
 	<artifactId>cassandra-jdbc-wrapper</artifactId>
-	<version>3.0.0</version>
+	<version>3.0.2</version>
 
 	<packaging>jar</packaging>
 	<name>Cassandra JDBC Wrapper</name>
@@ -40,18 +40,19 @@
 		<cassandra.version>2.1.9</cassandra.version>
 		<gpg.useagent>true</gpg.useagent>
 		<cassandra.host>localhost</cassandra.host>
+		<datastax.java.driver.version>3.0.0</datastax.java.driver.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.datastax.cassandra</groupId>
 			<artifactId>cassandra-driver-core</artifactId>
-			<version>${project.version}</version>
+			<version>${datastax.java.driver.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.datastax.cassandra</groupId>
 			<artifactId>cassandra-driver-core</artifactId>
-			<version>${project.version}</version>
+			<version>${datastax.java.driver.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

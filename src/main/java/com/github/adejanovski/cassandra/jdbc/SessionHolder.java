@@ -42,7 +42,7 @@ import static com.github.adejanovski.cassandra.jdbc.Utils.*;
  */
 class SessionHolder {
     private static final Logger logger = LoggerFactory.getLogger(SessionHolder.class);
-    static final String URL_KEY = "url";
+    static final String URL_KEY = "jdbcUrl";
 
     private final LoadingCache<Map<String, String>, SessionHolder> parentCache;
     private final Map<String, String> cacheKey;

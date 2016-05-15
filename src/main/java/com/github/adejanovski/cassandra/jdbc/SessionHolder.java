@@ -26,11 +26,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.CodecRegistry;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.core.exceptions.DriverException;
 import com.datastax.driver.core.policies.RoundRobinPolicy;
 import com.datastax.driver.core.policies.TokenAwarePolicy;
+import com.github.adejanovski.cassandra.jdbc.codec.TimestampToLongCodec;
 
 import static com.github.adejanovski.cassandra.jdbc.Utils.*;
 
@@ -168,6 +170,12 @@ class SessionHolder {
             }
         }
 
+        CodecRegistry customizedRegistry = new CodecRegistry();
+        TimestampToLongCodec timestampCodec = new TimestampToLongCodec(Long.class);
+
+        customizedRegistry.register(timestampCodec);
+        builder.withCodecRegistry(customizedRegistry);
+        
         Cluster cluster = null;
         try {
             cluster = builder.build();

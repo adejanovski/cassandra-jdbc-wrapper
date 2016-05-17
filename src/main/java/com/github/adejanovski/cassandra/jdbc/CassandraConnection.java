@@ -16,6 +16,7 @@ package com.github.adejanovski.cassandra.jdbc;
 
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.slf4j.Logger;
@@ -24,8 +25,7 @@ import org.slf4j.LoggerFactory;
 
 
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Cluster.Builder;
+
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Host;
 import com.datastax.driver.core.Metadata;
@@ -35,10 +35,7 @@ import com.datastax.driver.core.Session;
 
 
 
-import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.core.UserType;
-import com.datastax.driver.core.policies.RoundRobinPolicy;
-import com.datastax.driver.core.policies.TokenAwarePolicy;
 import com.google.common.collect.Maps;
 
 import static com.github.adejanovski.cassandra.jdbc.CassandraResultSet.*;
@@ -61,7 +58,7 @@ public class CassandraConnection extends AbstractConnection implements Connectio
     public static volatile int DB_REVISION = 2;
     public static final String DB_PRODUCT_NAME = "Cassandra";
     public static final String DEFAULT_CQL_VERSION = "3.0.0";
-    public Map<String, CassandraPreparedStatement> preparedStatements = Maps.newConcurrentMap();
+    public ConcurrentMap<String, CassandraPreparedStatement> preparedStatements = Maps.newConcurrentMap();
 
     public static Compression defaultCompression = Compression.LZ4;
 
@@ -345,7 +342,7 @@ public class CassandraConnection extends AbstractConnection implements Connectio
 
     public CassandraPreparedStatement prepareStatement(String cql) throws SQLException
     {
-    	CassandraPreparedStatement prepStmt = preparedStatements.getOrDefault(cql, null);    	
+    	CassandraPreparedStatement prepStmt = preparedStatements.get(cql);    	
     	if(prepStmt==null){
     		// Statement didn't exist
     		prepStmt = preparedStatements.putIfAbsent(cql, prepareStatement(cql,DEFAULT_TYPE,DEFAULT_CONCURRENCY,DEFAULT_HOLDABILITY));

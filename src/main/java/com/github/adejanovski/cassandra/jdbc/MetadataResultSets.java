@@ -14,29 +14,18 @@
  */
 package com.github.adejanovski.cassandra.jdbc;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLTransientException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-
-
 import com.datastax.driver.core.ColumnMetadata;
 import com.datastax.driver.core.IndexMetadata;
 import com.datastax.driver.core.KeyspaceMetadata;
-import com.datastax.driver.core.Row;
 import com.datastax.driver.core.TableMetadata;
 import com.google.common.collect.Lists;
+
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public  class MetadataResultSets
 {
@@ -178,6 +167,7 @@ public  class MetadataResultSets
 		    					// COLUMN_SIZE
 		    					int length = -1;
 		    		            AbstractJdbcType jtype = TypesMap.getTypeForComparator(column.getType().toString());
+
 		    		            if (jtype instanceof JdbcBytes) length = Integer.MAX_VALUE / 2;
 		    		            if (jtype instanceof JdbcAscii || jtype instanceof JdbcUTF8) length = Integer.MAX_VALUE;
 		    		            if (jtype instanceof JdbcUUID) length = 36;
@@ -189,8 +179,11 @@ public  class MetadataResultSets
 		    		            if (jtype != null && (jtype.getJdbcType() == Types.DECIMAL || jtype.getJdbcType() == Types.NUMERIC)) npr = 10;
 		    		            
 		    		            //CHAR_OCTET_LENGTH
-		    		            Integer charol = null;
-		    		            if (jtype instanceof JdbcAscii || jtype instanceof JdbcUTF8) charol = Integer.MAX_VALUE;
+		    		            Integer charol = Integer.MAX_VALUE;
+
+//								if (jtype instanceof JdbcAscii || jtype instanceof JdbcUTF8 || jtype instanceof JdbcDate) {
+//									charol = Integer.MAX_VALUE;
+//								}
 		    		            
 		    		            System.out.println("Type : " + column.getType().toString());
 		    		            System.out.println("Name : " + column.getName());

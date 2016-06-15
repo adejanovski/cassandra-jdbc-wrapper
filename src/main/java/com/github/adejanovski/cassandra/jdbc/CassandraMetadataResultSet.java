@@ -1016,7 +1016,7 @@ class CassandraMetadataResultSet extends AbstractResultSet implements CassandraR
         	if(currentRow!=null){
         		return currentRow.getColumnDefinitions().size();
         	}
-			return driverResultSet.getColumnDefinitions().size();
+			return driverResultSet!=null && driverResultSet.getColumnDefinitions()!=null?driverResultSet.getColumnDefinitions().size():0;
         }
 
         @SuppressWarnings("rawtypes")
@@ -1093,13 +1093,17 @@ class CassandraMetadataResultSet extends AbstractResultSet implements CassandraR
         	
             //checkIndex(column);
             DataType type = null;
-            if(currentRow!=null){
-            	type = currentRow.getColumnDefinitions().getType(column-1);
-            }else{
-            	type = driverResultSet.getColumnDefinitions().getType(column-1);
-            }
-        	        	
-        	return type.toString();            
+            try {
+				if(currentRow!=null){
+					type = currentRow.getColumnDefinitions().getType(column-1);
+				}else{
+					type = driverResultSet.getColumnDefinitions().getType(column-1); 
+				}
+				        	
+				return type.toString();
+			} catch (Exception e) {
+				return DataType.varchar().toString();
+			}            
         }
 
         public int getPrecision(int column) throws SQLException

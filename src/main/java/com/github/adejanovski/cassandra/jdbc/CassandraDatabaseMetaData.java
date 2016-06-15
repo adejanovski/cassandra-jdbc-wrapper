@@ -40,7 +40,7 @@ class CassandraDatabaseMetaData implements DatabaseMetaData
     public CassandraDatabaseMetaData(CassandraConnection connection) throws SQLException
     {
         this.connection = connection;
-        this.statement = new CassandraStatement(connection);
+        this.statement = new CassandraStatement(this.connection);        
         this.metadata = this.connection.getClusterMetadata();
     }
     
@@ -112,7 +112,10 @@ class CassandraDatabaseMetaData implements DatabaseMetaData
 
     public ResultSet getCatalogs() throws SQLException
     {
-        ResultSet rs = MetadataResultSets.instance.makeCatalogs(statement);
+    	if(statement.isClosed()){
+    		statement = new CassandraStatement(this.connection);
+    	}
+        ResultSet rs = MetadataResultSets.instance.makeCatalogs(statement);        
         return rs; 
     	
     }
@@ -129,13 +132,16 @@ class CassandraDatabaseMetaData implements DatabaseMetaData
 
     public ResultSet getColumns(String catalog,String schemaPattern, String tableNamePattern, String columnNamePattern) throws SQLException
     {
+    	if(statement.isClosed()){
+    		statement = new CassandraStatement(this.connection);
+    	}
     	if (catalog == null || connection.getCatalog().equals(catalog))
     	{
     		if (schemaPattern == null) schemaPattern = connection.getSchema(); //limit to current schema if set
 	        ResultSet rs = MetadataResultSets.instance.makeColumns(statement, schemaPattern, tableNamePattern,columnNamePattern);
 	        return rs;
     	}
-        return new CassandraResultSet();
+    	return new CassandraResultSet();
     }
 
     public Connection getConnection() throws SQLException
@@ -225,13 +231,16 @@ class CassandraDatabaseMetaData implements DatabaseMetaData
 
     public ResultSet getIndexInfo(String catalog, String schema, String table, boolean unique, boolean approximate) throws SQLException
     {
+    	if(statement.isClosed()){
+    		statement = new CassandraStatement(this.connection);
+    	}
     	if (catalog == null || connection.getCatalog().equals(catalog))
     	{
     		if (schema == null) schema = connection.getSchema(); //limit to current schema if set
 	        ResultSet rs = MetadataResultSets.instance.makeIndexes(statement, schema, table,unique,approximate);
 	        return rs;
     	}
-        return new CassandraResultSet();
+    	return new CassandraResultSet();
     }
 
     public int getJDBCMajorVersion() throws SQLException
@@ -352,13 +361,16 @@ class CassandraDatabaseMetaData implements DatabaseMetaData
 
     public ResultSet getPrimaryKeys(String catalog, String schema, String table) throws SQLException
     {
+    	if(statement.isClosed()){
+    		statement = new CassandraStatement(this.connection);
+    	}
     	if (catalog == null || connection.getCatalog().equals(catalog))
     	{
     		if (schema == null) schema = connection.getSchema(); //limit to current schema if set
 	        ResultSet rs = MetadataResultSets.instance.makePrimaryKeys(statement, schema, table);
 	        return rs;
     	}
-        return new CassandraResultSet();
+    	return new CassandraResultSet();
     }
 
     public ResultSet getProcedureColumns(String arg0, String arg1, String arg2, String arg3) throws SQLException
@@ -403,18 +415,26 @@ class CassandraDatabaseMetaData implements DatabaseMetaData
 
     public ResultSet getSchemas() throws SQLException
     {
-      ResultSet rs = MetadataResultSets.instance.makeSchemas(statement, null);
-      return rs;
+    	if(statement.isClosed()){
+    		statement = new CassandraStatement(this.connection);
+    	}
+    	ResultSet rs = MetadataResultSets.instance.makeSchemas(statement, null);    	
+    	return rs;
         
       
     }
 
     public ResultSet getSchemas(String catalog, String schemaPattern) throws SQLException
     {
-       if (!(catalog == null || catalog.equals(statement.connection.getCatalog()) ))
-            throw new SQLSyntaxErrorException("catalog name must exactly match or be null");
+    	if(statement.isClosed()){
+    		statement = new CassandraStatement(this.connection);
+    	}
+    	if (!(catalog == null || catalog.equals(statement.connection.getCatalog()) )){    		
+    		throw new SQLSyntaxErrorException("catalog name must exactly match or be null");
+    	}
         
         ResultSet rs = MetadataResultSets.instance.makeSchemas(statement, schemaPattern);
+        
         return rs;
     	
     	//return new CassandraResultSet();
@@ -452,7 +472,10 @@ class CassandraDatabaseMetaData implements DatabaseMetaData
 
     public ResultSet getTableTypes() throws SQLException
     {
-        ResultSet result = MetadataResultSets.instance.makeTableTypes(statement);
+    	if(statement.isClosed()){
+    		statement = new CassandraStatement(this.connection);
+    	}
+        ResultSet result = MetadataResultSets.instance.makeTableTypes(statement);        
         return result;
     }
 
@@ -473,6 +496,9 @@ class CassandraDatabaseMetaData implements DatabaseMetaData
     	}
     	if ((catalog == null || connection.getCatalog().equals(catalog)) && askingForTable)
     	{
+    		if(statement.isClosed()){
+        		statement = new CassandraStatement(this.connection);
+        	}
     		//if (schemaPattern == null) schemaPattern = connection.getSchema(); //limit to current schema if set
 	        ResultSet rs = MetadataResultSets.instance.makeTables(statement, schemaPattern, tableNamePattern);
 	        return rs;

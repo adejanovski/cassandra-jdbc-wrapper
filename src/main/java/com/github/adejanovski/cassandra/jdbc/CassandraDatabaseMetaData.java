@@ -14,22 +14,12 @@
  */
 package com.github.adejanovski.cassandra.jdbc;
 
+import com.datastax.driver.core.Metadata;
+
+import java.sql.*;
+
 import static com.github.adejanovski.cassandra.jdbc.Utils.NOT_SUPPORTED;
 import static com.github.adejanovski.cassandra.jdbc.Utils.NO_INTERFACE;
-
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.RowIdLifetime;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.sql.SQLSyntaxErrorException;
-import java.util.List;
-
-import com.datastax.driver.core.ColumnMetadata;
-import com.datastax.driver.core.KeyspaceMetadata;
-import com.datastax.driver.core.Metadata;
-import com.datastax.driver.core.TableMetadata;
 
 class CassandraDatabaseMetaData implements DatabaseMetaData
 {
@@ -137,6 +127,7 @@ class CassandraDatabaseMetaData implements DatabaseMetaData
     	}
     	if (catalog == null || connection.getCatalog().equals(catalog))
     	{
+            statement.connection = connection;
     		if (schemaPattern == null) schemaPattern = connection.getSchema(); //limit to current schema if set
 	        ResultSet rs = MetadataResultSets.instance.makeColumns(statement, schemaPattern, tableNamePattern,columnNamePattern);
 	        return rs;

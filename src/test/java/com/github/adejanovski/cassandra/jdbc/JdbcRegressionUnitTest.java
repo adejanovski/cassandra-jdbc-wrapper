@@ -1063,6 +1063,45 @@ public class JdbcRegressionUnitTest
     	con.isValid(-42);
     }
     
+    @Test
+    public void testTimestampToLongCodec() throws Exception
+    {
+    	System.out.println();
+        System.out.println("Test testTimestampToLongCodec");
+        System.out.println("--------------");
+        
+    	Statement stmt = con.createStatement();
+        java.util.Date now = new java.util.Date();
+                        
+        String createCF = "CREATE COLUMNFAMILY testTimestampToLongCodec (timestamp_col1 timestamp PRIMARY KEY, timestamp_col2 timestamp, text_value text);";
+        
+        stmt.execute(createCF);
+        stmt.close();
+        
+        String insert = "insert into testTimestampToLongCodec (timestamp_col1, timestamp_col2, text_value) values (?, ?, ?);";
+        PreparedStatement pstatement = con.prepareStatement(insert);
+        
+        pstatement.setObject(1, now.getTime()); // timestamp as long
+        pstatement.setObject(2, new Timestamp(now.getTime())); // timestamp as timestamp
+        pstatement.setString(3, "text_value"); // just text value
+        
+        pstatement.execute();
+        pstatement.close();
+        
+        String select = "select * from testTimestampToLongCodec;";
+        
+        PreparedStatement statement = con.prepareStatement(select);
+        ResultSet resultSet = statement.executeQuery();
+        
+        Assert.assertTrue(resultSet.next());
+        
+        Assert.assertEquals(resultSet.getLong("timestamp_col1"), now.getTime());
+        Assert.assertEquals(resultSet.getTimestamp("timestamp_col2"), new Timestamp(now.getTime()));
+        Assert.assertEquals(resultSet.getString("text_value"), "text_value");
+        
+        statement.close();
+        
+    }
     
     private final String  showColumn(int index, ResultSet result) throws SQLException
     {

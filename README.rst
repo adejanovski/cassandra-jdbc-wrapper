@@ -52,7 +52,7 @@ it in your application using the following Maven dependency::
     <dependency>
 		<groupId>com.github.adejanovski</groupId>
 		<artifactId>cassandra-jdbc-wrapper</artifactId>
-		<version>3.0.0</version>
+		<version>3.0.3</version>
 	</dependency>
 
 Or get the `fat jar with all dependencies included <https://drive.google.com/folderview?id=0B7fwX0DqcWSTNzZianJrWDI2bHc&usp=sharing#list>`_.

@@ -127,11 +127,7 @@ abstract class AbstractStatement
         throw new SQLFeatureNotSupportedException(NOT_SUPPORTED);
     }
 
-    public void setCharacterStream(int parameterIndex, Reader reader, int length) throws SQLException
-    {
-        throw new SQLFeatureNotSupportedException(NOT_SUPPORTED);
-    }
-
+    
     public void setCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException
     {
         throw new SQLFeatureNotSupportedException(NOT_SUPPORTED);

@@ -1258,5 +1258,19 @@ class CassandraMetadataResultSet extends AbstractResultSet implements CassandraR
 		return new ByteArrayInputStream(bytes);
 	}
 
+	@Override
+	public Blob getBlob(int index) throws SQLException {
+		checkIndex(index);
+		
+		return new javax.sql.rowset.serial.SerialBlob(currentRow.getBytes(index-1).array());
+	}
+
+	@Override
+	public Blob getBlob(String columnName) throws SQLException {
+		checkName(columnName);
+		
+		return new javax.sql.rowset.serial.SerialBlob(currentRow.getBytes(columnName).array());
+	}
+
 
 }

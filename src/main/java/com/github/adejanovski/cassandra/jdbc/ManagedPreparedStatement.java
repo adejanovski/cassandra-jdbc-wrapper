@@ -16,7 +16,9 @@ package com.github.adejanovski.cassandra.jdbc;
 
 import static com.github.adejanovski.cassandra.jdbc.Utils.WAS_CLOSED_CON;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Blob;
@@ -28,10 +30,14 @@ import java.sql.ResultSetMetaData;
 import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLNonTransientConnectionException;
+import java.sql.SQLNonTransientException;
 import java.sql.SQLWarning;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+
+import com.google.common.io.CharSource;
+import com.google.common.io.CharStreams;
 
 class ManagedPreparedStatement extends AbstractStatement implements PreparedStatement
 {
@@ -1041,6 +1047,20 @@ class ManagedPreparedStatement extends AbstractStatement implements PreparedStat
 		{
 			pooledCassandraConnection.statementErrorOccurred(preparedStatement, sqlException);
 			throw sqlException;
+		}
+		
+	}
+
+	@Override
+	public void setCharacterStream(int parameterIndex, Reader reader, int length) throws SQLException {
+		try {
+		    String targetString = CharStreams.toString(reader);
+		    reader.close();
+		    
+		    setString(parameterIndex, targetString);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			throw new SQLNonTransientException(e);
 		}
 		
 	}

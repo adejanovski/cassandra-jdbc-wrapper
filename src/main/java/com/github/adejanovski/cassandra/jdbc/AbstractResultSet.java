@@ -56,7 +56,7 @@ abstract class AbstractResultSet
     }
 
     
-    public Blob getBlob(int arg0) throws SQLException
+    /*public Blob getBlob(int arg0) throws SQLException
     {
         throw new SQLFeatureNotSupportedException(NOT_SUPPORTED);
     }
@@ -65,7 +65,7 @@ abstract class AbstractResultSet
     {
         throw new SQLFeatureNotSupportedException(NOT_SUPPORTED);
     }
-
+*/
     public Reader getCharacterStream(int arg0) throws SQLException
     {
         throw new SQLFeatureNotSupportedException(NOT_SUPPORTED);

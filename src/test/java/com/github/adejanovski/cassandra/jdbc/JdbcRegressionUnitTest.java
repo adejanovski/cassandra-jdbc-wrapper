@@ -123,14 +123,14 @@ public class JdbcRegressionUnitTest
         stmt.execute(useKS);
         
         // Create the target Column family
-        String createCF = "CREATE COLUMNFAMILY "+TABLE+" (keyname text PRIMARY KEY,"
+        String createCF = "CREATE COLUMNFAMILY " + KEYSPACE + "."+TABLE+" (keyname text PRIMARY KEY,"
                         + " bValue boolean,"
                         + " iValue int"
                         + ");";
         stmt.execute(createCF);
         
         //create an index
-        stmt.execute("CREATE INDEX ON "+TABLE+" (iValue)");
+        stmt.execute("CREATE INDEX ON " + KEYSPACE + "." + TABLE + " (iValue)");
         stmt.close();
         con.close();
 
@@ -1102,6 +1102,116 @@ public class JdbcRegressionUnitTest
         statement.close();
         
     }
+    
+    
+    @Test
+    public void testSetToNullUnsetParams() throws Exception
+    {
+    	System.out.println();
+        System.out.println("Test testSetToNullUnsetParams");
+        System.out.println("--------------");
+        
+    	Statement stmt = con.createStatement();
+        java.util.Date now = new java.util.Date();
+                        
+        String createCF = "CREATE COLUMNFAMILY testSetToNullUnsetParams (id int PRIMARY KEY, val1 text, val2 text);";
+        
+        stmt.execute(createCF);
+        stmt.close();
+        
+        String insert = "insert into testSetToNullUnsetParams (id, val1, val2) values (?, ?, ?);";
+        PreparedStatement pstatement = con.prepareStatement(insert);
+        
+        pstatement.setInt(1, 1); 
+        pstatement.setString(2, "val1"); 
+        // pstatement.setString(3, "text_value"); 
+        
+        pstatement.execute();
+        pstatement.close();
+        
+        String select = "select * from testSetToNullUnsetParams;";
+        
+        PreparedStatement statement = con.prepareStatement(select);
+        ResultSet resultSet = statement.executeQuery();
+        
+        Assert.assertTrue(resultSet.next());
+        Assert.assertEquals(resultSet.getInt("id"), 1);
+        Assert.assertEquals(resultSet.getString("val1"), "val1");
+        Assert.assertNull(resultSet.getString("val2"));
+        
+        statement.close();
+        
+    }
+    
+    
+    @Test
+    public void testBlob() throws Exception
+    {
+        
+    	System.out.println();
+        System.out.println("Test Blob");
+        System.out.println("--------------");
+        
+    	Statement stmt = con.createStatement();
+        java.util.Date now = new java.util.Date();
+        
+        
+        // Create the target Column family with each basic data type available on Cassandra
+                
+        String createCF = "CREATE COLUMNFAMILY tblob (id int PRIMARY KEY, blob_col1 blob, blob_col2 blob);";
+        
+        stmt.execute(createCF);
+        stmt.close();
+        con.close();
+
+        // open it up again to see the new CF
+        con = DriverManager.getConnection(String.format("jdbc:cassandra://%s:%d/%s?debug=true",HOST,PORT,KEYSPACE));
+        Statement statement = con.createStatement();
+        
+        
+        String insert = "INSERT INTO tblob(id, blob_col1 , blob_col2) "
+        			    + " values(?, ?, ?);";
+        
+        
+        
+        
+		
+        PreparedStatement pstatement = con.prepareStatement(insert);
+        
+        
+        pstatement.setObject(1, 1);
+        pstatement.setBlob(2, new ByteArrayInputStream("test1".getBytes("UTF-8"))); // blob
+        Blob blob = new javax.sql.rowset.serial.SerialBlob("test2".getBytes("UTF-8")); // blob
+        pstatement.setBlob(3, blob); // blob
+        pstatement.execute();
+        
+        
+        ResultSet result = statement.executeQuery("SELECT * FROM tblob where id=1;");
+        
+        AssertJUnit.assertTrue(result.next());
+        AssertJUnit.assertEquals(1, result.getInt("id"));
+        byte[] array = new byte[result.getBinaryStream("blob_col1").available()];
+    	try {
+    		result.getBinaryStream("blob_col1").read(array);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+        AssertJUnit.assertEquals("test1", new String(array, "UTF-8"));
+        
+        byte[] array2 = new byte[result.getBinaryStream("blob_col2").available()];
+    	try {
+    		result.getBinaryStream("blob_col2").read(array2);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+        AssertJUnit.assertEquals("test2", new String(array2, "UTF-8"));
+        
+        statement.close();
+        pstatement.close();
+    }
+
     
     private final String  showColumn(int index, ResultSet result) throws SQLException
     {

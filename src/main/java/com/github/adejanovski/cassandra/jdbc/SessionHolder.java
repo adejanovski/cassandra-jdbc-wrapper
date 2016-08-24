@@ -14,8 +14,11 @@
  */
 package com.github.adejanovski.cassandra.jdbc;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.SQLNonTransientConnectionException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,9 +32,15 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.CodecRegistry;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SocketOptions;
+import com.datastax.driver.core.TypeCodec;
 import com.datastax.driver.core.exceptions.DriverException;
 import com.datastax.driver.core.policies.RoundRobinPolicy;
 import com.datastax.driver.core.policies.TokenAwarePolicy;
+import com.github.adejanovski.cassandra.jdbc.codec.BigDecimalToBigintCodec;
+import com.github.adejanovski.cassandra.jdbc.codec.DoubleToDecimalCodec;
+import com.github.adejanovski.cassandra.jdbc.codec.DoubleToFloatCodec;
+import com.github.adejanovski.cassandra.jdbc.codec.IntToLongCodec;
+import com.github.adejanovski.cassandra.jdbc.codec.LongToIntCodec;
 import com.github.adejanovski.cassandra.jdbc.codec.TimestampToLongCodec;
 
 import static com.github.adejanovski.cassandra.jdbc.Utils.*;
@@ -170,11 +179,21 @@ class SessionHolder {
             }
         }
 
+        // Declare and register codecs
+        List<TypeCodec<?>> codecs = new ArrayList<TypeCodec<?>>();
         CodecRegistry customizedRegistry = new CodecRegistry();
-        TimestampToLongCodec timestampCodec = new TimestampToLongCodec(Long.class);
-
-        customizedRegistry.register(timestampCodec);
+        
+        codecs.add(new TimestampToLongCodec(Long.class));
+        codecs.add(new LongToIntCodec(Integer.class));
+        codecs.add(new IntToLongCodec(Long.class));
+        codecs.add(new BigDecimalToBigintCodec(BigDecimal.class));
+        codecs.add(new DoubleToDecimalCodec(Double.class));
+        codecs.add(new DoubleToFloatCodec(Double.class));
+        
+        customizedRegistry.register(codecs);
+        
         builder.withCodecRegistry(customizedRegistry);
+        // end of codec register
         
         Cluster cluster = null;
         try {

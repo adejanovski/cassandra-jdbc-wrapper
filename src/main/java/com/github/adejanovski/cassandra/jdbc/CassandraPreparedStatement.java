@@ -17,8 +17,10 @@ package com.github.adejanovski.cassandra.jdbc;
 
 import static com.github.adejanovski.cassandra.jdbc.Utils.NO_RESULTSET;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -57,6 +59,8 @@ import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.exceptions.CodecNotFoundException;
 import com.datastax.driver.core.exceptions.InvalidTypeException;
 import com.google.common.collect.Lists;
+import com.google.common.io.CharSource;
+import com.google.common.io.CharStreams;
 
 class CassandraPreparedStatement extends CassandraStatement implements PreparedStatement
 {
@@ -161,11 +165,13 @@ class CassandraPreparedStatement extends CassandraStatement implements PreparedS
             		// force paging to avoid timeout and node harm...
             		this.statement.setFetchSize(100);
             this.statement.setConsistencyLevel(this.connection.defaultConsistencyLevel);
-            currentResultSet = new CassandraResultSet(this, this.connection.getSession().execute(this.statement));            
-                        
-            //currentResultSet = this.statement.bind(values); 
-            //connection.execute(itemId, getBindValues(), consistencyLevel);
-            
+            for(int i=0; i<this.statement.preparedStatement().getVariables().size(); i++){
+            	// Set parameters to null if unset
+            	if(!this.statement.isSet(i)){
+            		this.statement.setToNull(i);
+            	}
+            }
+            currentResultSet = new CassandraResultSet(this, this.connection.getSession().execute(this.statement));
         }
         catch (Exception e)
         {
@@ -189,6 +195,12 @@ class CassandraPreparedStatement extends CassandraStatement implements PreparedS
 	    	List<ResultSetFuture> futures = new ArrayList<ResultSetFuture>();
 	    	if (this.connection.debugMode) System.out.println("CQL statements : "+ batchStatements.size());
 	    	for(BoundStatement q:batchStatements){
+	    		for(int i=0; i<q.preparedStatement().getVariables().size(); i++){
+	    			// Set parameters to null if unset
+	    			if(!q.isSet(i)){
+	            		q.setToNull(i);
+	            	}
+	            }
 	    		if (this.connection.debugMode) System.out.println("CQL: "+ cql);
 	    		q.setConsistencyLevel(this.connection.defaultConsistencyLevel);
 	    		
@@ -252,13 +264,13 @@ class CassandraPreparedStatement extends CassandraStatement implements PreparedS
 
     public ResultSetMetaData getMetaData() throws SQLException
     {
-        throw new SQLFeatureNotSupportedException(NOT_SUPPORTED);
+        return null;
     }
 
 
     public ParameterMetaData getParameterMetaData() throws SQLException
     {
-        throw new SQLFeatureNotSupportedException(NOT_SUPPORTED);
+        return null;
     }
 
 
@@ -650,14 +662,50 @@ class CassandraPreparedStatement extends CassandraStatement implements PreparedS
 	@SuppressWarnings("boxing")
 	@Override
 	public void setBlob(int parameterIndex, Blob value) throws SQLException {
-		bindValues.put(parameterIndex,value);
+	
+		InputStream in = value.getBinaryStream();
+
+		setBlob(parameterIndex, in);
+
+	}
+
+
+	@Override
+	public void setBlob(int parameterIndex, InputStream inputStream) throws SQLException {
+		int nRead;
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+		byte[] data = new byte[16384];
+
+		try {
+			while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+			  buffer.write(data, 0, nRead);
+			}
+		} catch (IOException e) {
+			throw new SQLNonTransientException(e);
+		}
+
+		try {
+			buffer.flush();
+		} catch (IOException e) {
+			throw new SQLNonTransientException(e);
+		}
+
+		this.statement.setBytes(parameterIndex-1, (ByteBuffer.wrap((buffer.toByteArray()))));
 		
 	}
 
 
 	@Override
-	public void setBlob(int arg0, InputStream arg1) throws SQLException {
-		// TODO Auto-generated method stub
+	public void setCharacterStream(int parameterIndex, Reader reader, int length) throws SQLException {
+		try {
+		    String targetString = CharStreams.toString(reader);
+		    reader.close();
+		    
+		    setString(parameterIndex, targetString);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			throw new SQLNonTransientException(e);
+		}
 		
 	}
    

@@ -656,8 +656,7 @@ class CassandraResultSet extends AbstractResultSet implements CassandraResultSet
 
 
     public ResultSetMetaData getMetaData() throws SQLException
-    {
-        checkNotClosed();
+    {        
         return meta;
     }
 
@@ -1182,10 +1181,14 @@ class CassandraResultSet extends AbstractResultSet implements CassandraResultSet
 
         public int getColumnCount() throws SQLException
         {
-        	if(currentRow!=null){
-        		return currentRow.getColumnDefinitions().size();
+        	try{
+	        	if(currentRow!=null){
+	        		return currentRow.getColumnDefinitions().size();
+	        	}
+				return driverResultSet.getColumnDefinitions().size();
+        	}catch(Exception e){
+        		return 0;
         	}
-			return driverResultSet.getColumnDefinitions().size();
         }
 
         @SuppressWarnings("rawtypes")
@@ -1429,7 +1432,18 @@ class CassandraResultSet extends AbstractResultSet implements CassandraResultSet
 		}
 	}
 	
-	
+	@Override
+	public Blob getBlob(int index) throws SQLException {
+		checkIndex(index);
+		
+		return new javax.sql.rowset.serial.SerialBlob(currentRow.getBytes(index-1).array());
+	}
 
+	@Override
+	public Blob getBlob(String columnName) throws SQLException {
+		checkName(columnName);
+		
+		return new javax.sql.rowset.serial.SerialBlob(currentRow.getBytes(columnName).array());
+	}
 
 }

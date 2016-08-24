@@ -287,6 +287,29 @@ public class BatchStatementsUnitTest {
         
     }
     
+    @Test
+    public void testUnsetParameterPreparedStatement() throws Exception
+    {
+    	System.out.println("Test: 'testUnsetParameterPreparedStatement'\n");
+
+        Statement stmt = con.createStatement();
+        stmt.execute("truncate testcollection");
+    	PreparedStatement statement = con.prepareStatement("INSERT INTO testcollection (k,L,M) VALUES(?,?,?)");
+        int nbRows = CassandraStatement.MAX_ASYNC_QUERIES;
+        
+        for(int i=0;i<nbRows;i++){
+        	//System.out.println("--- Generating prepared statement " + i);
+        	statement.setInt(1, i);
+        	statement.setString(2, "[1, 3, 12345]");
+        	statement.addBatch();
+        }
+        
+        
+        int[] counts = statement.executeBatch();
+        
+        assertEquals(nbRows,counts.length);
+    }
+    
     
     @Test
     public void testAsyncSelectStatement() throws Exception

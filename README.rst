@@ -55,7 +55,7 @@ it in your application using the following Maven dependency::
 		<version>3.1.0</version>
 	</dependency>
 
-Or get the `fat jar with all dependencies included <https://drive.google.com/folderview?id=0B7fwX0DqcWSTNzZianJrWDI2bHc&usp=sharing#list>`_.
+Or get the `fat jar with all dependencies included <https://github.com/adejanovski/cassandra-jdbc-wrapper/releases>`_.
 
 Getting Started
 ---------------
